@@ -1,220 +1,225 @@
-#include<iostream>
+// Online C++ compiler to run C++ program online
+#include <iostream>
 using namespace std;
+
+
 
 class node
 {
- public:
- int data;
- node *left;
- node *right;
+    public:
+    node *left;
+    int data;
+    node *right;
 };
+
 
 class BST
 {
-  public:
-  node *root;
-  BST()
-  {
-    root=NULL;
-  }
-  bool isEmpty()
-  {
-    if(root==NULL)
+    public:
+    node *root;
+    BST()
     {
-       return true;
+        root=NULL;
     }
-    else
+    bool isEmpty()
     {
-       return false; 
-    }
-  }
-  
-  void insert(int val)
-  {
-    node *n=new node;
-    n->data=val;
-    n->left=NULL;
-    n->right=NULL;
-    if(isEmpty())  // empty tree
-    {
-      root=n;
-    }
-    else
-    {
-       node *t=root;
-       while(t!=NULL)
-       {
-        if(t->data == n->data)
+        if(root==NULL)
         {
-            cout<<"ERROR:Can't Insert Duplicate Value "<<n->data<<" In the Tree"<<endl; 
-            break;
+          return true;
         }
-        else if(t->data < n->data)     // if inserted node is bigger then current nowhictraversed;
+        else
         {
-            if(t->right==NULL)
-            {
-                t->right=n;
-                break;
-            }
-            else
-            {
-              t=t->right;
-            }
+          return false;
         }
-        else if(t->data > n->data)
+    }
+    
+    node* insert_node(node *t,int val)
+    {
+        if(t==NULL)
         {
-            if(t->left==NULL)
-            {
-                t->left=n;
-                break;
-            }
-            else
-            {
-            t=t->left;    
-            }        // if inserted node is smaller node  then current node which is traversed;
+         node *n = new node;
+         n->left=NULL;
+         n->right=NULL;
+         n->data=val;
+         t=n;
         }
-       }
-      
+        else if(t->data < val)
+        {
+            t->right=insert_node(t->right,val);
+        }
+        else if(t->data > val)
+        {
+            t->left=insert_node(t->left,val);
+        }
+        return t;
     }
-  }
-  node* search(int val)
-  {
-    node *t=root;
-    while(t!=NULL && t->data!=val )
+     
+     
+    void inorder(node *t)
     {
-       if(t->data > val)
-       {
-           t=t->left;
-       }
-       else if(t->data < val)
-       {
-           t=t->right;
-       }
-    }  
-    return(t);
-  }
-  
-  
-  void del_node(int val)
-  {
-      root=delete_node(root,val);
-  }
-
-
-node* delete_node(node *ptr,int val)
-{
- if(ptr==NULL)
- {
-     return NULL;
- }
- else if(val<ptr->data)
- {
-     ptr->left=delete_node(ptr->left,val);
- }
- else if(val>ptr->data)
- {
-     ptr->right=delete_node(ptr->right,val);
- }
- else
- {
-     if(ptr->left==NULL && ptr->right==NULL)
-     {
-         delete ptr;
-         return NULL;
-     }
-     if(ptr->left==NULL || ptr->right==NULL)
-     {
-         node *child;
-         if(ptr->left!=NULL)
-         {
-          child=ptr->left;
-          delete ptr;
-          return child;
-         }
-         else if(ptr->right!=NULL)
-         {
-          child=ptr->right;
-          delete ptr;
-          return child;
-         }
-     }
-     if(ptr->left!=NULL && ptr->right!=NULL)
-     {
-      node *pre,*parent;
-      pre=ptr;
-      parent=pre->left;
-      while(pre->right!=NULL)
-      {
-        ptr=ptr->right;
-      }
-      ptr->data=pre->data;
-      parent->right=delete_node(pre,pre->data);
-     }
- }
- return(ptr);
-}
-
-
-
-
-
-~BST()
-{ 
-  
-    node *t=root;
-    while(t!=NULL)
-    {
-        del_node(t->data);
+        if(t==NULL)
+        {
+            return;
+        }
+        else
+        {
+            inorder(t->left);
+            cout<<t->data<<" ";
+            inorder(t->right);
+        }
     }
-}
-
+   
+    void preorder(node *t)
+    {
+        if(t==NULL)
+        {
+            return;
+        }
+        else
+        {
+            cout<<t->data<<" ";
+            preorder(t->left);
+            preorder(t->right);
+        }
+     
+    }
+     void postorder(node *t)
+    {
+        if(t==NULL)
+        {
+            return;
+        }
+        else
+        {
+            postorder(t->left);
+            postorder(t->right);
+            cout<<t->data<<" ";
+        }
+    }
+    
+    
+    void insert(int val)
+    {
+    
+        root=insert_node(root,val);
+    }
+    
+    
+    void del(int val)
+    {
+        root=delete_node(root,val);
+    }
+    
+    node* delete_node(node *t,int val)
+    {
+       if(t==NULL)
+       {
+           cout<<"Error:Tree is Empty Can't Delete";
+       }
+       else
+       {
+           if(t->data > val)           
+           {
+               t->left=delete_node(t->left,val);
+           }
+           else if(t->data < val)           
+           {
+               t->right=delete_node(t->right,val);
+           }
+           else
+           {
+               if(t->left==NULL && t->right==NULL)
+               {
+                   delete t;
+                   t=NULL;
+               }
+               else if(t->right==NULL && t->left!=NULL)    // node has one child in left side;
+               {
+                   node *temp;
+                   temp=t;
+                   t=t->left;
+                   delete temp;
+               }
+               else if(t->right!=NULL && t->left==NULL)    // node has one child in right side;
+               {
+                   node *temp;
+                   temp=t;
+                   t=t->right;
+                   delete temp;
+               }
+               else if(t->right!=NULL && t->left!=NULL)   //node hs 2 child nodes
+               {
+                   
+                   node *pre;
+                   pre=t->right;
+                   while(pre->left!=NULL)
+                   {
+                       pre=pre->left;
+                   }
+                   t->data=pre->data;
+                   t->right=delete_node(t->right,pre->data);
+               }
+           }
+       }
+       return t;
+    }
+    
+    
+    node* search(int val)
+    {
+        node *t;
+        t=root;
+        if(t==NULL)
+        {
+            return t;
+        }
+        else
+        {
+            while(t!=NULL)
+            {
+                if(t->data < val)
+                {
+                    t=t->right;
+                }
+                else if(t->data > val)
+                {
+                    t=t->left;
+                }
+                else if(t->data==val)
+                {
+                    break;
+                }
+            }
+              return t;
+        }
+    }
+    
+    ~BST()
+    {
+        while(root!=NULL)
+        {
+           del(root->data);
+        }
+    }
+    
 };
 
 
 
-void preorder(node *n)
-{
-  if(n!=NULL)
-  {   
-    cout<<n->data<<" ";
-    preorder(n->left);
-    preorder(n->right);
-  }
-}
-void inorder(node *n)
-{
-  if(n!=NULL)
-  {   
-    inorder(n->left);
-    cout<<n->data<<" ";
-    inorder(n->right);
-  }
-}
-void postorder(node *n)
-{
-  if(n!=NULL)
-  {   
-    postorder(n->left);
-    postorder(n->right);
-    cout<<n->data<<" ";
-  }
-}
 
-
-int main()
+int main() 
 {
-  node *t;
-  BST b1;
-  b1.insert(5);
-  b1.insert(3);
-  b1.insert(7);
-  b1.insert(2);
-  b1.insert(4);
-  b1.insert(6);
-  inorder(b1.root);cout<<endl;
-  b1.del_node(6);
-  inorder(b1.root);cout<<endl;
-  return 0;
+    BST b1;
+    b1.insert(10);
+    b1.insert(5);
+    b1.insert(15);
+    b1.insert(12);
+    b1.insert(18);
+    b1.inorder(b1.root);cout<<endl;
+    node *n=b1.search(32);
+    if(n!=NULL)
+       cout<<"Searched Node:"<<n->data;
+    else
+       cout<<"Node nahi mila\n";
+    return 0;
 }
-
-

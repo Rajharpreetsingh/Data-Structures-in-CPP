@@ -1,246 +1,327 @@
 #include<iostream>
 using namespace std;
 
-class node
+class node 
 {
- public:
- int data;
- int height;
- node *left;
- node *right;
+    public:
+    int data;
+    int height;
+    node *left;
+    node *right;
+    node()
+    {
+        height=0;
+        left=NULL;
+        right=NULL;
+    }
 };
 
-class AVL
+
+
+class AVL 
 {
-  public:
-  node *root;
-  AVL()
-  {
-    root=NULL;
-  }
-  bool isEmpty()
-  {
-    if(root==NULL)
+public:
+    node *root;
+
+
+    AVL() 
     {
-       return true;
+        root = NULL;
     }
-    else
+    
+    int max(int x,int y)
     {
-       return false; 
+        if(x>y)
+          return x;
+        else
+          return y;
     }
-  }
-  
-  int get_balance_factor(node *n)
-  {
-    int left,right;
+
+    node* insert_node(node *t,int val)
+    {
+         if(t==NULL)
+         {
+             node *n= new node;
+             n->data=val;
+             t=n;
+         }
+         else if(t->data < val)
+         {     
+              
+               t->right=insert_node(t->right,val);
+         }
+         else if(t->data > val)
+         {
+               t->left=insert_node(t->left,val);
+         }
+         t->height=1+max(getheight(t->left),getheight(t->right));
+         
+         if(get_balance_factor(t)<-1 || get_balance_factor(t)>1)
+         {
+                // t is Equal to disturbed Node
+               int b=get_balance_factor(t);
+               cout<<"Disturbed Node is:"<<t->data<<endl;
+               if(b > 1 && val < t->left->data)             //left of left insertion
+               {
+                t=right_rotate(t);
+               }
+               else if(b > 1 && val > t->left->data)        //right of left insertion
+               {
+                t->left=left_rotate(t->left);
+                t=right_rotate(t);
+               }
+               else if(b < -1 && val < t->right->data)        //right of left insertion
+               {
+                t->right=right_rotate(t->right);
+                t=left_rotate(t);
+               }
+               else if(b < -1 && val > t->right->data)        //right of right insertion
+               {
+               t=left_rotate(t);
+               }
+
+
+         }
+              
+        
+         return t;
+         
+        
+    }
+    
+    node* right_rotate(node *x)
+    {
+        node *y,*z;
+        y=x->left;
+        z=y->right;
+        y->right=x;
+        x->left=z;
+        x->height=1+max(getheight(x->left),getheight(x->right));
+        y->height=1+max(getheight(y->left),getheight(y->right));
+        return y;
+    }
+    
+    node* left_rotate(node *x)
+    {
+        node *y,*z;
+        y=x->right;
+        z=y->left;
+        y->left=x;
+        x->right=z;
+        x->height=1+max(getheight(x->left),getheight(x->right));
+        y->height=1+max(getheight(y->left),getheight(y->right));
+        return y;
+    }
+    
+    void insert(int val)
+    {
+        root=insert_node(root,val);
+    }
+    void Delete(int val)
+    {
+        root=delete_node(root,val);
+    }
+
+
+    node* delete_node(node *t,int val)
+    {
+        if(t==NULL)
+        {
+           cout<<"Error:Tree is Empty Can't Delete";
+        }
+        else if(t->data < val)
+        {
+           t->right=delete_node(t->right,val);
+        }
+        else if(t->data > val)
+        {
+            t->left=delete_node(t->left,val);
+        }
+        else if(t->data == val)
+        { 
+            if(t->left==NULL && t->right==NULL)              //leaf node  
+            {
+               delete t;
+               t=NULL;
+               return t;
+            }
+            else if(t->right==NULL && t->left!=NULL)          //one childode in left
+            {
+               node *temp;
+               temp=t;
+               t=t->left;
+               delete temp;
+            }
+            else if(t->right!=NULL && t->left==NULL)          //one child node in right
+            {
+               node *temp;
+               temp=t;
+               t=t->right;
+               delete temp;
+            }
+            else if(t->right!=NULL && t->left!=NULL)          //Has Two child nodes
+            {
+              node *inorder;
+              inorder=t->right;
+              while(inorder->left!=NULL)
+              {
+                inorder=inorder->left;
+              }
+              t->data=inorder->data;
+              t->right=delete_node(t->right,inorder->data);
+            }
+        }
+        
+         if(get_balance_factor(t)<-1 || get_balance_factor(t)>1)
+         {
+            //t is Equal to disturbed Node
+            //cout<<"Disturbed Node is:"<<t->data<<endl;
+               int b=get_balance_factor(t);
+               if(t->right!=NULL)
+               {
+               if(b <-1 &&  get_balance_factor(t->right)<=0)
+               {
+                    t=left_rotate(t);        //left rotation
+               }
+               
+               if(b <-1 && get_balance_factor(t->right)>0)
+               {
+                    t->right=right_rotate(t->right);        //right left rotation
+                    t=left_rotate(t);
+               }
+               }
+               
+               if(t->left!=NULL)
+               {
+               if(b>1 && get_balance_factor(t->left)>=0)
+               {
+                   t=right_rotate(t);                          //right rotation
+               }
+               if(b>1 && get_balance_factor(t->left)<0)
+               {
+                   t->left=left_rotate(t->left);              //left right rotation
+                   t=right_rotate(t);
+               }
+               }
+         }
+        return t;
+    }
+    
+    node* search(int val)
+    {
+        node *t;
+        t=root;
+        if(t==NULL)
+        {
+            return t;
+        }
+        else
+        {
+           while(t->data!=val)
+           {
+                if(t->data < val)
+                {
+                    t=t->right;
+                }
+                else if(t->data > val)
+                {
+                    t=t->left;
+                }
+           }
+           return t;
+        }
+        
+
+    }
      
-          if(n->left==NULL)
-          {
-                 left=0; 
-          }
-          else if(n->right==NULL)
-          {
-                 right=0; 
-          }
-          else
-          {
-            left=n->left->height;
-            right=n->right->height;
-          }
-          return(left-right);
-       
-  }
 
-  
-  void insert(int val)
-  {
-    node *n=new node;
-    n->data=val;
-    n->left=NULL;
-    n->right=NULL;
-    if(isEmpty())  // empty tree
+    int getheight(node* t)
     {
-      root=n;
+        if(t==NULL)
+        {
+            return -1;
+        }
+        else
+        {
+           return (t->height);
+        }
     }
-    else
-    {
-       node *t=root;
-       while(t!=NULL)
-       {
-        if(t->data == n->data)
-        {
-            cout<<"ERROR:Can't Insert Duplicate Value "<<n->data<<" In the Tree"<<endl; 
-            break;
-        }
-        else if(t->data < n->data)     // if inserted node is bigger then current nowhictraversed;
-        {
-            if(t->right==NULL)
-            {
-                t->right=n;
-                break;
-            }
-            else
-            {
-              t=t->right;
-            }
-        }
-        else if(t->data > n->data)
-        {
-            if(t->left==NULL)
-            {
-                t->left=n;
-                break;
-            }
-            else
-            {
-            t=t->left;    
-            }        // if inserted node is smaller node  then current node which is traversed;
-        }
-       }
-      
-    }
-  }
-  node* search(int val)
-  {
-    node *t=root;
-    while(t!=NULL && t->data!=val )
-    {
-       if(t->data > val)
-       {
-           t=t->left;
-       }
-       else if(t->data < val)
-       {
-           t=t->right;
-       }
-    }  
-    return(t);
-  }
-  
-  
-  void del_node(int val)
-  {
-      root=delete_node(root,val);
-  }
 
-
-node* delete_node(node *ptr,int val)
-{
- if(ptr==NULL)
- {
-     return NULL;
- }
- else if(val<ptr->data)
- {
-     ptr->left=delete_node(ptr->left,val);
- }
- else if(val>ptr->data)
- {
-     ptr->right=delete_node(ptr->right,val);
- }
- else
- {
-     if(ptr->left==NULL && ptr->right==NULL)
-     {
-         delete ptr;
-         return NULL;
-     }
-     if(ptr->left==NULL || ptr->right==NULL)
-     {
-         node *child;
-         if(ptr->left!=NULL)
+    void inorder(node *t)
+    {
+         if(t==NULL)
          {
-          child=ptr->left;
-          delete ptr;
-          return child;
+            return;
          }
-         else if(ptr->right!=NULL)
-         {
-          child=ptr->right;
-          delete ptr;
-          return child;
-         }
-     }
-     if(ptr->left!=NULL && ptr->right!=NULL)
-     {
-      node *pre,*parent;
-      pre=ptr;
-      parent=pre->left;
-      while(pre->right!=NULL)
-      {
-        ptr=ptr->right;
-      }
-      ptr->data=pre->data;
-      parent->right=delete_node(pre,pre->data);
-     }
- }
- return(ptr);
-}
-
-
-
-
-
-~AVL()
-{ 
-  
-    node *t=root;
-    while(t!=NULL)
-    {
-        del_node(t->data);
+        else
+        {
+            inorder(t->left);
+            cout<<t->data<<" ";
+            inorder(t->right);
+        }
     }
-}
-
+    
+    void postorder(node *t)
+    {
+         if(t==NULL)
+         {
+            return;
+         }
+        else
+        {
+            postorder(t->left);
+            postorder(t->right);
+            cout<<t->data<<" ";
+        }
+    }
+     void preorder(node *t)
+    {
+         if(t==NULL)
+         {
+            return;
+         }
+        else
+        {
+            cout<<t->data<<" ";
+            preorder(t->left);
+            preorder(t->right);        
+        }
+    }
+    
+    int get_balance_factor(node *n)
+    {
+        return (getheight(n->left)-getheight(n->right));
+    }
+    
+    ~AVL() 
+    {
+       while(root!=NULL)
+       {
+        Delete(root->data);
+       }
+    }
+   
+    
 };
 
 
-
-void preorder(node *n)
+int main() 
 {
-  if(n!=NULL)
-  {   
-    cout<<n->data<<" ";
-    preorder(n->left);
-    preorder(n->right);
-  }
+    AVL a1;
+    node *n;
+    a1.insert(9);
+    a1.insert(5);
+    a1.insert(10);
+    a1.insert(0);
+    a1.insert(6);
+    a1.insert(11);
+    a1.insert(-1);
+    a1.insert(1);
+    a1.insert(2);
+    a1.preorder(a1.root);cout<<endl;
+    a1.Delete(10);
+    a1.preorder(a1.root);
+   // n=a1.search(50);
+   // cout<<"Node ka balance factor hai:"<<a1.get_balance_factor(n);
+    return 0;
 }
-void inorder(node *n)
-{
-  if(n!=NULL)
-  {   
-    inorder(n->left);
-    cout<<n->data<<" ";
-    inorder(n->right);
-  }
-}
-void postorder(node *n)
-{
-  if(n!=NULL)
-  {   
-    postorder(n->left);
-    postorder(n->right);
-    cout<<n->data<<" ";
-  } 
-}
-
-
-int main()
-{
-  node *t;
-  AVL a1;
-  a1.insert(5);
-  a1.insert(3);
-  a1.insert(7);
-  a1.insert(2);
-  a1.insert(4);
-  a1.insert(6);
-  inorder(a1.root);cout<<endl;
-  //a1.del_node(6);
-  //inorder(a1.root);cout<<endl;
-
- // int x=a1.get_balance_factor(a1.root);
-  //cout<<"Balance Factor is :"<<x;
-  return 0;
-}
-
-

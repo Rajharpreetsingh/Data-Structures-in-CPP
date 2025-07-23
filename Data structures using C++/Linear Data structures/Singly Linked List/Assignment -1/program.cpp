@@ -15,6 +15,7 @@ class SLL
 	node *start;
 	SLL()
 	{
+
 		start=NULL;
 	}
 	
@@ -207,3 +208,5 @@ s1.endinsert(5);
 	s1.deletelast();
 	s1.print();
 }
+
+
