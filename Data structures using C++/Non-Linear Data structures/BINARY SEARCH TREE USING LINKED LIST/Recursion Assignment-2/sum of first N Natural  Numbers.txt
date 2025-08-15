@@ -1,0 +1,24 @@
+#include <iostream>
+using namespace std;
+
+int fun(int n)
+{
+    if(n==0)
+    {
+        return n ;
+    }
+    return(n+fun(n-1));
+    cout<<n<<" ";
+}
+
+
+
+int main() 
+{
+    int sum,num;
+    cout<<"Enter a Number:";
+    cin>>num;
+    sum=fun(num);
+    cout<<"Sum of Numbers is:"<<sum;
+    return 0;
+}
