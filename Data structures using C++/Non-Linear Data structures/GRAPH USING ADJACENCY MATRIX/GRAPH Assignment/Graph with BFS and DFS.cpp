@@ -392,7 +392,7 @@ Graph(int n)
 {
 v=n;
 int i,j;
-matrix=new int*[n];
+matrix=new int*[n];               //DMA 
 for(i=0;i<n;i++)
 {
     matrix[i]=new int[n];
@@ -466,6 +466,7 @@ void BFS(int n)
             }
         }  
     }
+    delete [] visited ;
 }
 
 
@@ -497,11 +498,8 @@ void DFS(int start)
             }
         }
     }
+       delete [] visited ;
 }
-
-
-
-
 
 
 

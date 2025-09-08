@@ -9,10 +9,12 @@ class node
 	node *next;
 };
 
+
 class SLL
 {
 	public:
 	node *start;
+
 	SLL()
 	{
 
@@ -24,6 +26,7 @@ class SLL
 		node *newnode= new node;
 		newnode->data=val;
 		newnode->next=NULL;
+
 		if(start==NULL)
 		{
 			start=newnode;
@@ -40,6 +43,7 @@ class SLL
 		node *newnode= new node;
 		newnode->data=val;
 		newnode->next=NULL;
+		
 		if(start==NULL)
 		{
 			start=newnode;
@@ -203,7 +207,7 @@ s1.endinsert(2);
 s1.endinsert(3);
 s1.endinsert(4);
 s1.endinsert(5);
-
+s1.insertAfter(s1.search(0),67);
 	s1.print();
 	s1.deletelast();
 	s1.print();

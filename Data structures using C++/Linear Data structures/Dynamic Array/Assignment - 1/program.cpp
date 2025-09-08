@@ -128,9 +128,9 @@ class DynArray
 	int get_element(int index)
 	{
 		if(index>lastindex || index<0)
-		{
-			return(NULL);
+		{		
 			cout<<"Invalid Index\n";
+			return(-1);
 		}   
 		else                     
 		{
@@ -144,7 +144,7 @@ class DynArray
 	int find(int val)
 	{
 		int i=0;
-		for(i;i<lastindex;i++)
+		for(i;i<=lastindex;i++)
 		{
 			if(ptr[i]==val)
 			{
@@ -158,14 +158,9 @@ class DynArray
 	void edit(int index, int val)
 	{
 		int i=0;
-		if(index>lastindex || index<0)
+		if(index<=lastindex && index>=0)
 		{
-			cout<<"Invalid Index\n";
-		}
-		else
-		{
-		for(i=0;i<index;i++);
-		ptr[i]=val;
+		ptr[index]=val;
      	}
 	}
 	~DynArray()

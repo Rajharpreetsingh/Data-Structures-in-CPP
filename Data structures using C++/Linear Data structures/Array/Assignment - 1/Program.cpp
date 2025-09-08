@@ -24,6 +24,8 @@ void operator=(Array &arr)
   }
 
 }
+
+
 Array(int cap)
 {
 	capacity=cap;
@@ -185,7 +187,7 @@ void print()
 
 int main()
 {
-	Array a1(7); 
+	Array a1(7),a2(7); 
 	a1.insert(0,1);
 	a1.insert(0,2);
 	a1.insert(0,3);
@@ -194,5 +196,6 @@ int main()
 	a1.insert(0,6);
 	a1.insert(0,17);
 	a1.print();
+	a2=a1;
 	return 0;
 }
